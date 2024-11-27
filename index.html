@@ -2,7 +2,21 @@
 <meta charset="UTF-8" />
 <!DOCTYPE html>
 <html>
-	<head> </head>
+	<head> 
+		<script type="text/javascript" charset="utf-8">
+	(function (g, e, n, es, ys) {
+    g['_genesysJs'] = e;
+    g[e] = g[e] || function () {
+      (g[e].q = g[e].q || []).push(arguments)
+    };
+    g[e].t = 1 * new Date();
+    g[e].c = es;
+    ys = document.createElement('script'); ys.async = 1; ys.src = n; ys.charset = 'utf-8'; document.head.appendChild(ys);
+  })(window, 'Genesys', 'https://apps.mypurecloud.com/genesys-bootstrap/genesys.min.js', {
+    environment: 'use1',
+    deploymentId: '61caf643-f1a1-48a9-80b7-d7bfa99949d4'
+  }); </script>
+	</head>
 	<body>
 		<p>append ?deploymentId=x to url</p>
 		<p></p>
@@ -77,135 +91,3 @@
 			});
 		</script>
 
-		<script>
-			//window.GENESYS_COBROWSE_DEBUG_DOM = true;
-
-			const DOMAINS = {
-				mock: 'localhost',
-				dev: 'inindca.com',
-				test: 'inintca.com',
-				apne1: 'mypurecloud.jp',
-				apne2: 'apne2.pure.cloud',
-				apse2: 'mypurecloud.com.au',
-				aps1: 'aps1.pure.cloud',
-				cac1: 'cac1.pure.cloud',
-				euc1: 'mypurecloud.de',
-				euw1: 'mypurecloud.ie',
-				euw2: 'euw2.pure.cloud',
-				use1: 'mypurecloud.com',
-				usw2: 'usw2.pure.cloud',
-				sae1: 'sae1.pure.cloud',
-				mec1: 'mec1.pure.cloud',
-				apne3: 'apne3.pure.cloud',
-				euc2: 'euc2.pure.cloud',
-				'fedramp-use2-core': 'use2.us-gov-pure.cloud'
-			};
-
-			function discoverEnvironment() {
-				for (const [env, domain] of Object.entries(DOMAINS)) {
-					if (window.location.host.includes(domain)) {
-						return env;
-					}
-				}
-				throw new Error(`Cannot discover environment from '${window.location.href}'`);
-			}
-
-			function createFontStyles(env, domain) {
-				const css = `
-                @font-face {
-                    font-family: 'icomoon';
-                    src: url('https://apps.${
-											env === 'mock' ? 'inindca.com' : domain
-										}/cobrowse-next/fonts/icomoon.woff') format('woff')
-                }
-            `;
-
-				const style = document.createElement('style');
-				style.type = 'text/css';
-
-				document.head.appendChild(style);
-				style.appendChild(document.createTextNode(css));
-			}
-
-			// Check if deployment ID is defined in URL
-			// Default deployment Ids to be used in case deployment IDs are not passed through url
-			const params = new URLSearchParams(window.location.search);
-			const deploymentIdParam = params.get('deploymentId');
-			const isDeploymentId = deploymentIdParam != null && deploymentIdParam != '' && deploymentIdParam != 'undefined';
-
-			if (!isDeploymentId) {
-				throw new Error('Need to pass ?deploymentId= parameter');
-			}
-
-			const env = discoverEnvironment();
-			const domain = DOMAINS[env];
-
-			createFontStyles(env, domain);
-
-			// single snippet (a bit reverse-engineered): load genesys.js and cxbus
-			(function (g, e, n, es, ys) {
-				g['_genesysJs'] = e;
-				g[e] =
-					g[e] ||
-					function () {
-						(g[e].q = g[e].q || []).push(arguments);
-					};
-				g[e].t = 1 * new Date();
-				g[e].c = es;
-				ys = document.createElement('script');
-
-				// load local sharer for development
-				if (domain === 'localhost') {
-					ys.onload = () => {
-						Genesys('subscribe', 'ServiceDiscovery.ready', (e) => {
-							Genesys('configure', {
-								allowTypescript: true,
-								pluginmap: {
-									CobrowseService: 'src/sharer.ts'
-								}
-							});
-						});
-					};
-				}
-
-				ys.async = 1;
-				ys.src = n;
-				ys.charset = 'utf-8';
-				document.head.appendChild(ys);
-			})(window, 'Genesys', `https://apps.inindca.com/genesys-bootstrap/genesys.min.js`, {
-				environment: env === 'mock' ? 'dev' : env,
-				deploymentId: deploymentIdParam,
-				// turn on cxbus debug logs
-				debug: true
-			});
-
-			if (domain === 'localhost') {
-				window.cobrowseUrl = 'http://localhost:8080';
-			}
-
-			function joinSession(sessionId) {
-				Genesys(
-					'command',
-					'CobrowseService.acceptSession',
-					{
-						joinCode: sessionId,
-						sessionId: sessionId
-					},
-					(offerState) => {
-						console.log('acceptSession.success', offerState);
-					},
-					(err) => {
-						console.log('acceptSession.error', err);
-					}
-				);
-
-				document.getElementById('inputSessionID')?.remove();
-				document.getElementById('joinSession')?.remove();
-			}
-
-			Genesys('subscribe', 'CobrowseService.navigationRequested', (event) => {
-				document.getElementById('pushURLDom').style.display = 'block';
-			});
-		</script>
-	</body>
-</html>
