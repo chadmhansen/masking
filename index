@@ -1,0 +1,209 @@
+
+<meta charset="UTF-8" />
+<!DOCTYPE html>
+<html>
+	<head> </head>
+	<body>
+		<h1 id="initialP">Masking page</h1>
+		<h1>Regex Masking Test Cases</h1>
+
+		<h2>Phone Numbers</h2>
+		<div id="phone-1">Example 1 (Basic): 1234567890</div>
+		<div id="phone-2">Example 2 (With Dashes): 123-456-7890</div>
+		<div id="phone-3">Example 3 (With Spaces): 123 456 7890</div>
+		<div id="phone-4">Example 4 (With Parentheses): (123) 456-7890</div>
+
+		<h2>Dates</h2>
+		<div id="date-1">Example 1 (MM/DD/YYYY): 10/04/2024</div>
+		<div id="date-2">Example 2 (DD/MM/YYYY): 04/10/2024</div>
+		<div id="date-3">Example 3 (ISO YYYY-MM-DD): 2024-10-04</div>
+
+		<h2>Timestamps</h2>
+		<div id="timestamp-1">Example 1 (YYYY-MM-DD HH:MM:SS): 2024-10-04 15:30:45</div>
+		<div id="timestamp-2">Example 2 (12-hour format with AM/PM): 10/04/2024 03:30:45 PM</div>
+
+		<h2>URLs</h2>
+		<div id="url-1">Example 1 (HTTP Basic): http://example.com</div>
+		<div id="url-2">Example 2 (HTTPS with Subdomain): https://www.example.com</div>
+		<div id="url-3">Example 3 (With Port): https://example.com:8080</div>
+
+		<h2>Mixed Content</h2>
+		<div id="mixed-1">Phone Number and Date: Call me at (123) 456-7890 on 10/04/2024.</div>
+		<div id="mixed-2">URL with Timestamp: Check the logs at https://example.com/ on 2024-10-04T15:30:45+00:00.</div>
+
+		<!-- Shadow DOM Test -->
+		<h2>Shadow DOM</h2>
+		<div id="shadow-host"></div>
+		<script>
+			const shadowHost = document.querySelector('#shadow-host');
+			const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+			shadowRoot.innerHTML = `
+			<div id="phone-5">Example 5 (International): +1 123-456-7890</div>
+			<div id="phone-6">Example 6 (With Extension): 123-456-7890 ext. 1234</div>
+			`;
+		</script>
+
+		<!-- Hidden Elements Test -->
+		<h2>Hidden Elements</h2>
+		<div id="url-4" style="display: none">Example 4 (With Path and Query): https://example.com/page?query=value</div>
+		<div id="url-5" hidden>Example 5 (With Fragment): https://example.com/page#section</div>
+
+		<!-- Dynamic Element Test -->
+		<h2>Dynamic Elements</h2>
+		<div id="dynamic-content"></div>
+		<script>
+			const dynamicContent = document.querySelector('#dynamic-content');
+			const addDynamicContent = () => {
+				dynamicContent.innerHTML = `
+				<div id="date-4">Example 4: 05/11/2024</div>
+				<div id="date-5">Example 5: 06/12/2024</div>
+			`;
+			};
+		</script>
+
+		<!-- Mutation Testing Button -->
+		<h2>Mutation Test</h2>
+		<button id="mutation-button">Add Dynamic Content</button>
+		<script>
+			const button = document.getElementById('mutation-button');
+			button.addEventListener('click', () => {
+				addDynamicContent();
+				const newElement = document.createElement('div');
+				newElement.textContent = 'Example 3 (ISO 8601 with Timezone): 2024-10-04T15:30:45+00:00';
+				newElement.id = 'timestamp-3';
+				document.body.appendChild(newElement);
+			});
+		</script>
+
+		<script>
+			//window.GENESYS_COBROWSE_DEBUG_DOM = true;
+
+			const DOMAINS = {
+				mock: 'localhost',
+				dev: 'inindca.com',
+				test: 'inintca.com',
+				apne1: 'mypurecloud.jp',
+				apne2: 'apne2.pure.cloud',
+				apse2: 'mypurecloud.com.au',
+				aps1: 'aps1.pure.cloud',
+				cac1: 'cac1.pure.cloud',
+				euc1: 'mypurecloud.de',
+				euw1: 'mypurecloud.ie',
+				euw2: 'euw2.pure.cloud',
+				use1: 'mypurecloud.com',
+				usw2: 'usw2.pure.cloud',
+				sae1: 'sae1.pure.cloud',
+				mec1: 'mec1.pure.cloud',
+				apne3: 'apne3.pure.cloud',
+				euc2: 'euc2.pure.cloud',
+				'fedramp-use2-core': 'use2.us-gov-pure.cloud'
+			};
+
+			function discoverEnvironment() {
+				for (const [env, domain] of Object.entries(DOMAINS)) {
+					if (window.location.host.includes(domain)) {
+						return env;
+					}
+				}
+				throw new Error(`Cannot discover environment from '${window.location.href}'`);
+			}
+
+			function createFontStyles(env, domain) {
+				const css = `
+                @font-face {
+                    font-family: 'icomoon';
+                    src: url('https://apps.${
+											env === 'mock' ? 'inindca.com' : domain
+										}/cobrowse-next/fonts/icomoon.woff') format('woff')
+                }
+            `;
+
+				const style = document.createElement('style');
+				style.type = 'text/css';
+
+				document.head.appendChild(style);
+				style.appendChild(document.createTextNode(css));
+			}
+
+			// Check if deployment ID is defined in URL
+			// Default deployment Ids to be used in case deployment IDs are not passed through url
+			const params = new URLSearchParams(window.location.search);
+			const deploymentIdParam = params.get('deploymentId');
+			const isDeploymentId = deploymentIdParam != null && deploymentIdParam != '' && deploymentIdParam != 'undefined';
+
+			if (!isDeploymentId) {
+				throw new Error('Need to pass ?deploymentId= parameter');
+			}
+
+			const env = discoverEnvironment();
+			const domain = DOMAINS[env];
+
+			createFontStyles(env, domain);
+
+			// single snippet (a bit reverse-engineered): load genesys.js and cxbus
+			(function (g, e, n, es, ys) {
+				g['_genesysJs'] = e;
+				g[e] =
+					g[e] ||
+					function () {
+						(g[e].q = g[e].q || []).push(arguments);
+					};
+				g[e].t = 1 * new Date();
+				g[e].c = es;
+				ys = document.createElement('script');
+
+				// load local sharer for development
+				if (domain === 'localhost') {
+					ys.onload = () => {
+						Genesys('subscribe', 'ServiceDiscovery.ready', (e) => {
+							Genesys('configure', {
+								allowTypescript: true,
+								pluginmap: {
+									CobrowseService: 'src/sharer.ts'
+								}
+							});
+						});
+					};
+				}
+
+				ys.async = 1;
+				ys.src = n;
+				ys.charset = 'utf-8';
+				document.head.appendChild(ys);
+			})(window, 'Genesys', `https://apps.inindca.com/genesys-bootstrap/genesys.min.js`, {
+				environment: env === 'mock' ? 'dev' : env,
+				deploymentId: deploymentIdParam,
+				// turn on cxbus debug logs
+				debug: true
+			});
+
+			if (domain === 'localhost') {
+				window.cobrowseUrl = 'http://localhost:8080';
+			}
+
+			function joinSession(sessionId) {
+				Genesys(
+					'command',
+					'CobrowseService.acceptSession',
+					{
+						joinCode: sessionId,
+						sessionId: sessionId
+					},
+					(offerState) => {
+						console.log('acceptSession.success', offerState);
+					},
+					(err) => {
+						console.log('acceptSession.error', err);
+					}
+				);
+
+				document.getElementById('inputSessionID')?.remove();
+				document.getElementById('joinSession')?.remove();
+			}
+
+			Genesys('subscribe', 'CobrowseService.navigationRequested', (event) => {
+				document.getElementById('pushURLDom').style.display = 'block';
+			});
+		</script>
+	</body>
+</html>
