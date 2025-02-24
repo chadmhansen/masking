@@ -1,1 +1,182 @@
 
+<meta charset="UTF-8" />
+<!DOCTYPE html>
+<html>
+	<head> 
+		<script type="text/javascript" charset="utf-8">
+	(function (g, e, n, es, ys) {
+    g['_genesysJs'] = e;
+    g[e] = g[e] || function () {
+      (g[e].q = g[e].q || []).push(arguments)
+    };
+    g[e].t = 1 * new Date();
+    g[e].c = es;
+    ys = document.createElement('script'); ys.async = 1; ys.src = n; ys.charset = 'utf-8'; document.head.appendChild(ys);
+  })(window, 'Genesys', 'https://apps.mypurecloud.com/genesys-bootstrap/genesys.min.js', {
+    environment: 'use1',
+    deploymentId: '61caf643-f1a1-48a9-80b7-d7bfa99949d4'
+  }); </script>
+
+<style>
+body {
+  background-color:white;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #38444d;
+}
+
+li {
+  float: left;
+}
+
+li a, .dropbtn {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+li.dropdown {
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1;}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+</style>
+	</head>
+	
+	<body>
+
+		<ul>
+  <li><a href="#home">Home</a></li>
+  <li><a href="#news">News</a></li>
+  <li class="dropdown">
+    <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+    <div class="dropdown-content">
+      <a href="https://chadmhansen.github.io/messenger/">Messenger</a>
+      <a href="#">Link 2</a>
+      <a href="#">Link 3</a>
+    </div>
+  </li>
+</ul>
+		
+		<p></p>
+		<h1 id="initialP">Masking page</h1>
+		<h1>Regex Masking Test Cases</h1>
+
+		<h2>Phone Numbers</h2>
+		<div id="phone-1">Example 1 (Basic): 1234567890</div>
+		<div id="phone-2">Example 2 (With Dashes): 123-456-7890</div>
+		<div id="phone-3">Example 3 (With Spaces): 123 456 7890</div>
+		<div id="phone-4">Example 4 (With Parentheses): (123) 456-7890</div>
+
+		<h2>Dates</h2>
+		<div id="date-1">Example 1 (MM/DD/YYYY): 10/04/2024</div>
+		<div id="date-2">Example 2 (DD/MM/YYYY): 04/10/2024</div>
+		<div id="date-3">Example 3 (ISO YYYY-MM-DD): 2024-10-04</div>
+
+		<h2>Timestamps</h2>
+		<div id="timestamp-1">Example 1 (YYYY-MM-DD HH:MM:SS): 2024-10-04 15:30:45</div>
+		<div id="timestamp-2">Example 2 (12-hour format with AM/PM): 10/04/2024 03:30:45 PM</div>
+
+		<h2>URLs</h2>
+		<div id="url-1">Example 1 (HTTP Basic): http://example.com</div>
+		<div id="url-2">Example 2 (HTTPS with Subdomain): https://www.example.com</div>
+		<div id="url-3">Example 3 (With Port): https://example.com:8080</div>
+
+		<h2>Mixed Content</h2>
+		<div id="mixed-1">Phone Number and Date: Call me at (123) 456-7890 on 10/04/2024.</div>
+		<div id="mixed-2">URL with Timestamp: Check the logs at https://example.com/ on 2024-10-04T15:30:45+00:00.</div>
+
+		<h2>Emails</h2>
+		<div id="email-1">test@test.com</div>
+
+		<h2>IPv4/v6</h2>
+		<div id="ipv4">192.168.0.1</div>
+		<div id="ipv6">2001:0000:130F:0000:0000:09C0:876A:130B</div>
+
+		<h2>SNN</h2>
+		<div id="snn">123-45-6789</div>
+
+		<h2>Credit Cards</h2>
+		<div id="cc1">378282246310005</div>
+		<div id="cc2">378734493671000</div>
+		<div id="cc3">5105105105105100</div>
+
+		<h2>Links to test</h2>
+		<div id="link1"><a href="https://www.google.com">www.google.com</a></div>
+		<div id="link2"><a href="https://chadmhansen.github.io/suppcenter/">Github - Support Center</a></div>
+
+
+		<!-- Shadow DOM Test -->
+		<h2>Shadow DOM</h2>
+		<div id="shadow-host"></div>
+		<script>
+			const shadowHost = document.querySelector('#shadow-host');
+			const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+			shadowRoot.innerHTML = `
+			<div id="phone-5">Example 5 (International): +1 123-456-7890</div>
+			<div id="phone-6">Example 6 (With Extension): 123-456-7890 ext. 1234</div>
+			`;
+		</script>
+
+		<!-- Hidden Elements Test -->
+		<h2>Hidden Elements</h2>
+		<div id="url-4" style="display: none">Example 4 (With Path and Query): https://example.com/page?query=value</div>
+		<div id="url-5" hidden>Example 5 (With Fragment): https://example.com/page#section</div>
+
+		<!-- Dynamic Element Test -->
+		<h2>Dynamic Elements</h2>
+		<div id="dynamic-content"></div>
+		<script>
+			const dynamicContent = document.querySelector('#dynamic-content');
+			const addDynamicContent = () => {
+				dynamicContent.innerHTML = `
+				<div id="date-4">Example 4: 05/11/2024</div>
+				<div id="date-5">Example 5: 06/12/2024</div>
+			`;
+			};
+		</script>
+
+		<!-- Mutation Testing Button -->
+		<h2>Mutation Test</h2>
+		<button id="mutation-button">Add Dynamic Content</button>
+		<script>
+			const button = document.getElementById('mutation-button');
+			button.addEventListener('click', () => {
+				addDynamicContent();
+				const newElement = document.createElement('div');
+				newElement.textContent = 'Example 3 (ISO 8601 with Timezone): 2024-10-04T15:30:45+00:00';
+				newElement.id = 'timestamp-3';
+				document.body.appendChild(newElement);
+			});
+		</script>
